@@ -13,6 +13,13 @@ router.get(
   asyncHandler(TeacherAttendanceController.getAttendance),
 );
 
+router.get(
+  "/:id/download",
+  authMiddleware,
+  roleMiddleware("TEACHER"),
+  asyncHandler(TeacherAttendanceController.downloadAttendance),
+);
+
 router.post(
   "/:id/finalize-attendance",
   internalAuth,
