@@ -12,7 +12,7 @@ export const sendEmail = async ({
   html: string;
 }) => {
   const { data, error } = await resend.emails.send({
-    from: "Coursity <noreply@athulraj.online>",
+    from: `Coursity <noreply@${process.env.EMAIL_DOMAIN}>`,
     to,
     subject,
     html,

@@ -8,8 +8,8 @@ import UserRepository from "../repositories/users.repositories.js";
 const OtpController = {
   sendOtp: async (req: Request, res: Response) => {
     const user = req.user;
-    console.log("sending otp..");
     const dbUser = await UserServices.getUserById(user.id);
+    const { resend } = req.body;
 
     if (!dbUser)
       return res
@@ -22,12 +22,15 @@ const OtpController = {
         .json({ success: false, message: "Your account is already verified" });
 
     console.log("email : ", dbUser.email);
-    const isOtpExist = await OtpRepository.findExistingOtp(user.email);
-    if (isOtpExist)
-      return res.status(403).json({
-        success: false,
-        message: "Otp already sent. Please try after 1 min",
-      });
+
+    if (!resend) {
+      const isOtpExist = await OtpRepository.findExistingOtp(user.email);
+      if (isOtpExist)
+        return res.status(403).json({
+          success: false,
+          message: "Otp already sent. Please try after 1 min",
+        });
+    }
 
     const otp = generateOtp();
     // send otp
@@ -51,8 +54,6 @@ const OtpController = {
         </div>
       `,
     });
-
-    console.log("otp sent");
 
     return res.status(200).json({ success: true });
   },
@@ -93,9 +94,8 @@ const OtpController = {
 
     // Mark OTP as used
     await OtpRepository.markOtpAsUsed(existingOtp.id);
-
-    // Mark user verified
     await UserRepository.markVerified(dbUser.id);
+    await OtpRepository.deleteOtpsByEmail(dbUser.email);
 
     return res.status(200).json({
       success: true,

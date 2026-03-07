@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ShieldCheck,
@@ -16,13 +16,12 @@ import { sendOtpApi, verifyOtpApi } from "@/services/otp.services";
 import { toast } from "sonner";
 import { useMe } from "@/queries/auth.queries";
 import Loading from "./Loading";
-
-/* ── Replace these with your actual mutation hooks ── */
-// import { useSendOtpMutation, useVerifyOtpMutation } from "@/queries/auth.queries";
+import { useQueryClient } from "@tanstack/react-query";
 
 const OTP_LENGTH = 6;
 
 const VerifyOtp = () => {
+  const queryClient = useQueryClient();
   const { data, isLoading } = useMe();
   const router = useRouter();
   const [stage, setStage] = useState<"send" | "verify" | "success">("send");
@@ -30,13 +29,31 @@ const VerifyOtp = () => {
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   /* ── Send OTP ── */
-  const handleSendOtp = async () => {
+  const handleSendOtp = async (resend?: boolean) => {
     try {
       setIsSending(true);
-      await sendOtpApi();
-
+      await sendOtpApi(resend);
+      if (stage === "verify") {
+        toast.success("Otp has been resent to your email address");
+      }
+      setResendCooldown(60);
       setStage("verify");
     } catch (error: any) {
       toast.error(error.message);
@@ -83,6 +100,7 @@ const VerifyOtp = () => {
       await verifyOtpApi(code);
 
       setIsVerifying(false);
+      queryClient.invalidateQueries({ queryKey: ["me"] });
       setStage("success");
     } catch (error: any) {
       toast.error(error.message);
@@ -167,7 +185,7 @@ const VerifyOtp = () => {
               </p>
 
               <Button
-                onClick={handleSendOtp}
+                onClick={() => handleSendOtp()}
                 disabled={isSending}
                 className="w-full h-11 rounded-sm bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm shadow-md shadow-violet-200 transition-all duration-200 gap-2"
               >
@@ -269,14 +287,26 @@ const VerifyOtp = () => {
 
               {/* Resend */}
               <button
+                disabled={resendCooldown > 0}
                 onClick={() => {
                   setOtp(Array(OTP_LENGTH).fill(""));
-                  handleSendOtp();
+                  handleSendOtp(true);
                 }}
-                className="mt-4 flex items-center gap-1.5 text-xs text-neutral-400 hover:text-violet-600 transition-colors duration-200 font-medium"
+                className={`
+          mt-4 flex items-center gap-1.5 text-xs font-medium transition-colors duration-200
+          ${
+            resendCooldown > 0
+              ? "text-neutral-300 cursor-not-allowed"
+              : "text-neutral-400 hover:text-violet-600 cursor-pointer"
+          }
+        `}
               >
-                <RotateCcw className="w-3 h-3" />
-                Resend code
+                <RotateCcw
+                  className={`w-3 h-3 ${resendCooldown > 0 ? "opacity-40" : ""}`}
+                />
+                {resendCooldown > 0
+                  ? `Resend code in ${resendCooldown}s`
+                  : "Resend code"}
               </button>
             </motion.div>
           )}

@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import UserRepository from "../repositories/users.repositories.js";
 
 export const isUserVerifiedMiddleware = async (
   req: Request,
@@ -6,7 +7,9 @@ export const isUserVerifiedMiddleware = async (
   next: NextFunction,
 ) => {
   const user = req.user;
-  if (user.isVerified) next();
+  const dbUser = await UserRepository.getUserByIdForAdmin(user.id);
+  if (!dbUser) return res.status(400).json({ message: "User not found" });
+  if (dbUser.isVerified) return next();
 
   return res
     .status(401)

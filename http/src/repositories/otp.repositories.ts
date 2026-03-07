@@ -32,6 +32,10 @@ const OtpRepository = {
       data: { used: true },
     });
   },
+
+  deleteOtpsByEmail: async (email: string) => {
+    return await prisma.otp.deleteMany({ where: { email } });
+  },
 };
 
 export default OtpRepository;
