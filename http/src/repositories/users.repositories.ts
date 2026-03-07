@@ -15,6 +15,7 @@ const UserRepository = {
         role: true,
         createdAt: true,
         updatedAt: true,
+        isVerified: true,
 
         wallet: {
           select: {
@@ -49,6 +50,13 @@ const UserRepository = {
         totalWalletTransactions: user.wallet?._count.transactions ?? 0,
       },
     };
+  },
+
+  async markVerified(userId: string) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isVerified: true },
+    });
   },
 };
 

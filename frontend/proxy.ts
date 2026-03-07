@@ -6,6 +6,8 @@ type JWTPayload = {
   userId: string;
   role: "STUDENT" | "TEACHER" | "ADMIN";
   exp: number;
+  username: string;
+  isVerified: boolean;
 };
 
 export async function proxy(request: NextRequest) {

@@ -9,6 +9,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  isVerified: boolean;
   createdAt: string; // ISO date string
 }
 

@@ -88,6 +88,7 @@ model User {
   password  String
   role      Role
   wallet    Wallet?
+  isVerified   Boolean   @default(false)
 
   // Relations
   courses      Course[]      @relation("TeacherCourses")
@@ -98,6 +99,20 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+
+  email     String
+  otp       String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@unique([otp])
 }
 
 model Course {

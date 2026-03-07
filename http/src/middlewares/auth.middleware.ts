@@ -22,8 +22,9 @@ export const authMiddleware = (
       id: decoded.userId as string,
       role: decoded.role,
       username: decoded.username,
+      isVerified: decoded.isVerified,
     };
-    // console.log("req user ", req.user);
+    console.log("req user ", req.user);
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid or expired token" });

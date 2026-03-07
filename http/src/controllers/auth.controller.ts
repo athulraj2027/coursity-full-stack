@@ -7,7 +7,7 @@ const AuthController = {
     const { name, email, role, password } = req.body;
 
     const user = await AuthServices.signupUser(name, email, role, password);
-    const token = generateToken(user.id, user.role, user.name);
+    const token = generateToken(user.id, user.role, user.name, user.isVerified);
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -27,7 +27,8 @@ const AuthController = {
   signin: async (req: Request, res: Response) => {
     const { email, password, role } = req.body;
     const user = await AuthServices.signinUser(email, password, role);
-    const token = generateToken(user.id, user.role, user.name);
+    console.log("user  :", user);
+    const token = generateToken(user.id, user.role, user.name, user.isVerified);
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

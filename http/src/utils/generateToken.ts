@@ -6,8 +6,9 @@ export default function generateToken(
   userId: string,
   role: Role,
   username: string,
+  isVerified: boolean,
 ) {
-  return jwt.sign({ userId, role, username }, JWT_SECRET, {
+  return jwt.sign({ userId, role, username, isVerified }, JWT_SECRET, {
     expiresIn: "7d",
   });
 }

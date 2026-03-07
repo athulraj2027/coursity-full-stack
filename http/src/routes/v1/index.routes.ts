@@ -9,12 +9,14 @@ import paymentRoutes from "./paymentRoutes/payments.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 import walletRoutes from "./walletRoutes/wallet.routes.js";
 import userRoutes from "./users.routes.js";
+import otpRoutes from "./otp.routes.js";
 import { authMiddleware } from "../../middlewares/auth.middleware.js";
 import { roleMiddleware } from "../../middlewares/role.middleware.js";
 
 const router = express.Router();
 
 router.use("/auth", authRoutes);
+router.use("/otp", otpRoutes);
 router.use("/courses", courseRoutes);
 router.use("/lectures", lectureRoutes);
 router.use("/uploads", uploadsRoutes);
