@@ -57,4 +57,8 @@ export const dashboardApi = () =>
   apiRequest({ path: "/dashboard", method: "GET" });
 
 export const googleAuthApi = (token: any) =>
-  apiRequest({ path: "/auth/google", method: "POST", body: { token } });
+  apiRequest<SigninResponse, typeof token>({
+    path: "/auth/google",
+    method: "POST",
+    body: { token },
+  });

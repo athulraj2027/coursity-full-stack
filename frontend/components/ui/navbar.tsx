@@ -51,8 +51,8 @@ export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
       navigationLinks = defaultNavigationLinks,
       signInText = "Sign In",
       signInHref = "/sign-in",
-      ctaText = "Get Started",
-      ctaHref = "/sign-up",
+      ctaText = "Sign in",
+      ctaHref = "/sign-in",
       onSignInClick,
       onCtaClick,
       ...props
@@ -180,7 +180,7 @@ export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
                 className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-sm font-bold transition-all duration-150"
               >
                 {ctaText}
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-150" />
+              
               </button>
             </Link>
           </div>

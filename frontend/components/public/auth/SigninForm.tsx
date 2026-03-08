@@ -9,7 +9,7 @@ import { SIGNIN_FORM_REQUIRED_FIELDS } from "@/constants/authForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { BookOpen, GraduationCap, Loader2, Sun } from "lucide-react";
-import { googleAuthApi } from "@/services/auth.services";
+import { googleAuthApi, SigninResponse } from "@/services/auth.services";
 import { toast } from "sonner";
 
 const DarkLabel = ({ children }: { children: React.ReactNode }) => (
@@ -164,9 +164,13 @@ const SigninForm = () => {
         </button>
 
         <GoogleLogin
+          theme="filled_blue"
+          width={`full`}
           onSuccess={(credentialResponse) => {
             googleAuthApi(credentialResponse.credential)
-              .then(() => router.push("/"))
+              .then((res: SigninResponse) =>
+                router.push(`/${res.role.toLowerCase()}`),
+              )
               .catch((error: { success: boolean; message: string }) =>
                 toast.error(error.message),
               );

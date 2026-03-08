@@ -19,12 +19,6 @@ const SigninCard = () => {
               Enter your credentials to sign in
             </p>
           </div>
-          <Link
-            href="/sign-up"
-            className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition-colors duration-150 mt-1 shrink-0"
-          >
-            Sign up
-          </Link>
         </div>
 
         {/* Form */}
