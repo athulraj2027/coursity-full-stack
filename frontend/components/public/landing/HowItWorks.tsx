@@ -1,5 +1,5 @@
+import Card3dDemo from "@/components/ui/dynamic-ui-card";
 import React from "react";
-import Card3dDemo from "../ui/dynamic-ui-card";
 
 const steps = [
   {
