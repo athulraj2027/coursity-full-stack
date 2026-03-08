@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import AuthServices from "../services/auth.services.js";
-import generateToken from "../utils/generateToken.js";
+import AuthServices from "../../services/auth.services.js";
+import generateToken from "../../utils/generateToken.js";
 
 const AuthController = {
   signup: async (req: Request, res: Response) => {
@@ -11,7 +11,8 @@ const AuthController = {
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      domain: process.env.DOMAIN_URL,
+      domain:
+        process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -29,10 +30,12 @@ const AuthController = {
     const user = await AuthServices.signinUser(email, password, role);
     console.log("user  :", user);
     const token = generateToken(user.id, user.role, user.name, user.isVerified);
+    console.log("token : ", token);
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      domain: process.env.DOMAIN_URL,
+      domain:
+        process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -49,7 +52,7 @@ const AuthController = {
     res.clearCookie("auth_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      domain: process.env.DOMAIN_URL,
+      domain:  process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

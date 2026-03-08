@@ -58,6 +58,10 @@ const UserRepository = {
       data: { isVerified: true },
     });
   },
+
+  async getUsersByEmail(email: string) {
+    return await prisma.user.findUnique({ where: { email } });
+  },
 };
 
 export default UserRepository;
