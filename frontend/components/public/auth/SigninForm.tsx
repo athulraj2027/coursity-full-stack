@@ -167,7 +167,6 @@ const SigninForm = () => {
 
         <div className="w-full">
           <GoogleLogin
-            theme="filled_blue"
             onSuccess={(credentialResponse) => {
               setLoading(true);
               googleAuthApi(credentialResponse.credential)
