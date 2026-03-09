@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import UserRepository from "../../repositories/users.repositories.js";
 import generateToken from "../../utils/generateToken.js";
+import { setAuthCookie } from "../../utils/cookie.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -40,14 +41,8 @@ const GoogleAuthController = {
       user.isVerified,
     );
 
-    res.cookie("auth_token", auth_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      domain:
-        process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    setAuthCookie(res, auth_token);
+
     return res.status(201).json({
       success: true,
       id: user.id,

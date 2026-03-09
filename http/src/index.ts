@@ -17,7 +17,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(errorMiddleware);
 app.use(`/api/v1`, v1Routes);
+app.use(errorMiddleware);
 
 app.listen(PORT, () => console.log(`Http server running on ${PORT}`));

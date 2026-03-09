@@ -22,12 +22,17 @@ export async function apiRequest<TResponse, TBody = undefined>({
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  console.log("res : ", res);
+
   if (!res.ok) {
     let message = "Something went wrong";
     try {
       const err = await res.json();
+      console.log("err : ", err);
       message = err.message ?? message;
-    } catch {}
+    } catch {
+      console.log("catch workign");
+    }
     throw new Error(message);
   }
 

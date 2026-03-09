@@ -19,13 +19,18 @@ export interface SignupResponse {
   email: string;
 }
 
+export interface ErrorResponse {
+  success: false;
+  message: string;
+}
+
 export const signupApi = (data: {
   name: string;
   email: string;
   role: Role;
   password: string;
 }) =>
-  apiRequest<SignupResponse, typeof data>({
+  apiRequest<SignupResponse | ErrorResponse, typeof data>({
     path: "/auth/signup",
     method: "POST",
     body: data,
@@ -56,6 +61,7 @@ export const meApi = (): Promise<UseMeResponse> =>
 export const dashboardApi = () =>
   apiRequest({ path: "/dashboard", method: "GET" });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const googleAuthApi = (token: any) =>
   apiRequest<SigninResponse, typeof token>({
     path: "/auth/google",

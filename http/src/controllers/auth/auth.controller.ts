@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import AuthServices from "../../services/auth.services.js";
 import generateToken from "../../utils/generateToken.js";
+import { clearAuthCookie, setAuthCookie } from "../../utils/cookie.js";
 
 const AuthController = {
   signup: async (req: Request, res: Response) => {
@@ -8,14 +9,8 @@ const AuthController = {
 
     const user = await AuthServices.signupUser(name, email, role, password);
     const token = generateToken(user.id, user.role, user.name, user.isVerified);
-    res.cookie("auth_token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      domain:
-        process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    setAuthCookie(res, token);
+    
     return res.status(201).json({
       success: true,
       id: user.id,
@@ -31,14 +26,7 @@ const AuthController = {
     console.log("user  :", user);
     const token = generateToken(user.id, user.role, user.name, user.isVerified);
     console.log("token : ", token);
-    res.cookie("auth_token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      domain:
-        process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    setAuthCookie(res, token);
     return res.status(201).json({
       success: true,
       id: user.id,
@@ -49,14 +37,7 @@ const AuthController = {
   },
 
   logout: async (req: Request, res: Response) => {
-    res.clearCookie("auth_token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      domain:  process.env.NODE_ENV === "production" ? process.env.DOMAIN_URL : "",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
+    clearAuthCookie(res);
     return res.status(200).json({
       success: true,
       message: "Logged out successfully",
