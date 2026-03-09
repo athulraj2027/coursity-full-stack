@@ -30,14 +30,14 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.18.0",
     "razorpay": "^2.9.6",
-    "resend": "^6.9.3"
+    "resend": "^6.9.3",
+    "@types/node": "^25.2.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.2.0",
     "@types/pg": "^8.16.0",
     "prisma": "^6.19.2",
     "tsx": "^4.21.0",
