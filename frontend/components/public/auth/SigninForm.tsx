@@ -163,19 +163,21 @@ const SigninForm = () => {
           )}
         </button>
 
-        <GoogleLogin
-          theme="filled_blue"
-          width={`full`}
-          onSuccess={(credentialResponse) => {
-            googleAuthApi(credentialResponse.credential)
-              .then((res: SigninResponse) =>
-                router.push(`/${res.role.toLowerCase()}`),
-              )
-              .catch((error: { success: boolean; message: string }) =>
-                toast.error(error.message),
-              );
-          }}
-        />
+        <div className="w-full">
+          <GoogleLogin
+            theme="filled_blue"
+            width={400}
+            onSuccess={(credentialResponse) => {
+              googleAuthApi(credentialResponse.credential)
+                .then((res: SigninResponse) =>
+                  router.push(`/${res.role.toLowerCase()}`),
+                )
+                .catch((error: { success: boolean; message: string }) =>
+                  toast.error(error.message),
+                );
+            }}
+          />
+        </div>
       </div>
     </form>
   );
