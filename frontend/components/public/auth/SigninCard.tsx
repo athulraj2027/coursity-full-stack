@@ -4,10 +4,7 @@ import SigninForm from "./SigninForm";
 
 const SigninCard = () => {
   return (
-    <div className="w-full">
-      {/* Logo */}
-
-      {/* Card */}
+    <div className="w-full mt-20 sm:mt-0">
       <div className=" backdrop-blur-xl border border-white/10 rounded-sm p-7 shadow-2xl shadow-black/40">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">

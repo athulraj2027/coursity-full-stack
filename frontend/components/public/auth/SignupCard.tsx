@@ -6,8 +6,7 @@ import SignupForm from "./SignupForm";
 
 const SignupCard = () => {
   return (
-    <div className="w-full">
-     
+    <div className="w-full  mt-20 sm:mt-0">
       {/* Card */}
       <div className=" backdrop-blur-xl border border-white/10 rounded-sm p-7 shadow-2xl shadow-black/40">
         {/* Header */}
@@ -20,7 +19,6 @@ const SignupCard = () => {
               Enter your details to get started
             </p>
           </div>
-       
         </div>
 
         {/* Form */}
