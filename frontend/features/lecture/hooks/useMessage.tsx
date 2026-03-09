@@ -5,8 +5,8 @@ import { socket } from "@/lib/socket";
 
 type MessagePayload = {
   message: string;
-  lectureId: string;
-  senderId?: string | "You";
+  lectureId?: string;
+  user: { id?: string; username: string | "You" };
 };
 
 export const useMessage = (lectureId: string) => {
@@ -19,11 +19,10 @@ export const useMessage = (lectureId: string) => {
     const payload: MessagePayload = {
       message,
       lectureId,
+      user: { username: "You" },
     };
 
     socket.emit("send-message", payload);
-    payload.senderId = "You";
-    // optimistic update
     setMessages((prev) => [...prev, payload]);
     setMessage("");
   };

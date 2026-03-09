@@ -168,9 +168,10 @@ const SigninForm = () => {
             width={324}
             onSuccess={(credentialResponse) => {
               googleAuthApi(credentialResponse.credential)
-                .then((res: SigninResponse) =>
-                  router.push(`/${res.role.toLowerCase()}`),
-                )
+                .then((res: SigninResponse) => {
+                  toast.success("Logged in successfully");
+                  router.push(`/${res.role.toLowerCase()}`);
+                })
                 .catch((error: { success: boolean; message: string }) =>
                   toast.error(error.message),
                 );

@@ -5,8 +5,7 @@ import { Send } from "lucide-react";
 
 type Message = {
   message: string;
-  lectureId: string;
-  senderId?: string;
+  user: { id?: string; username: string | "You" };
 };
 
 type ChatProps = {
@@ -35,7 +34,7 @@ const Chat = ({ message, setMessage, messages, sendMessage }: ChatProps) => {
           </div>
         ) : (
           messages.map((msg, index) => {
-            const isOwn = msg.senderId === "You";
+            const isOwn = msg.user.username === "You";
             return (
               <div
                 key={index}
@@ -46,7 +45,7 @@ const Chat = ({ message, setMessage, messages, sendMessage }: ChatProps) => {
                 >
                   {/* Sender label */}
                   <span className="text-[10px] font-semibold text-neutral-500 mb-1 px-1">
-                    {isOwn ? "You" : msg.senderId || "User"}
+                    {isOwn ? "You" : msg.user.username || "User"}
                   </span>
 
                   {/* Bubble */}

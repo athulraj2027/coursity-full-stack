@@ -112,7 +112,7 @@ export const useJoinRoom = () => {
     );
   };
 
-  const removeProducerById = (producerId: string, lectureId: string) => {
+  const removeProducerById = (producerId: string) => {
     consumersRef.current.forEach((consumer, consumerId) => {
       if (consumer.producerId === producerId) {
         consumer.close();
@@ -477,6 +477,7 @@ export const useJoinRoom = () => {
       screenProducerRef.current?.close();
       const track = localScreenStream?.getVideoTracks()[0];
       track?.stop();
+      setLocalScreenStream(null);
     } catch (error) {
       console.log("Error stopping screenshare:", error);
       toast.error("Failed to stop screenshare");

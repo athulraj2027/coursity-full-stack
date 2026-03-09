@@ -8,7 +8,7 @@ export const useLectureSocket = (
   lectureId: string,
   setExistingUsers: React.Dispatch<React.SetStateAction<any[]>>,
   consume: (producer: any) => void,
-  removeProducerById: (producerId: string, lectureId: string) => void,
+  removeProducerById: (producerId: string) => void,
   pauseVideoUI: (producerId: string) => void,
   resumeVideoUI: (producerId: string) => void,
 ) => {
@@ -57,7 +57,7 @@ export const useLectureSocket = (
     };
     const handleProducerStopped = ({ producerId }: { producerId: string }) => {
       console.log("producer stopped : ", producerId);
-      removeProducerById(producerId, lectureId);
+      removeProducerById(producerId);
     };
 
     socket.on("new-user-joined", handleNewUser);
