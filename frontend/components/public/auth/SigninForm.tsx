@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { BookOpen, GraduationCap, Loader2, Sun } from "lucide-react";
 import { googleAuthApi, SigninResponse } from "@/services/auth.services";
 import { toast } from "sonner";
+import Loading from "@/components/common/Loading";
 
 const DarkLabel = ({ children }: { children: React.ReactNode }) => (
   <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -50,6 +51,7 @@ const SigninForm = () => {
   const [isValid, setIsValid] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -166,19 +168,21 @@ const SigninForm = () => {
         <div className="w-full">
           <GoogleLogin
             theme="filled_blue"
-            width={400}
             onSuccess={(credentialResponse) => {
+              setLoading(true);
               googleAuthApi(credentialResponse.credential)
                 .then((res: SigninResponse) =>
                   router.push(`/${res.role.toLowerCase()}`),
                 )
                 .catch((error: { success: boolean; message: string }) =>
                   toast.error(error.message),
-                );
+                )
+                .finally(() => setLoading(false));
             }}
           />
         </div>
       </div>
+      {loading && <Loading />}
     </form>
   );
 };
