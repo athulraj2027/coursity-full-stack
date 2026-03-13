@@ -37,12 +37,10 @@ interface ProfileData {
   location: string | null;
   user: { name: string; email: string; role: string };
 }
-
 interface ApiResponse {
   success: boolean;
   profile: ProfileData | null;
 }
-
 interface FormState {
   avatarUrl: string;
   headline: string;
@@ -53,7 +51,6 @@ interface FormState {
   linkedin: string;
   twitter: string;
 }
-
 const EMPTY_FORM: FormState = {
   avatarUrl: "",
   headline: "",
@@ -65,7 +62,7 @@ const EMPTY_FORM: FormState = {
   twitter: "",
 };
 
-/* ─── Field ───────────────────────────────────────────────────────────────── */
+/* ─── Compact field ───────────────────────────────────────────────────────── */
 const Field = ({
   label,
   icon: Icon,
@@ -73,7 +70,6 @@ const Field = ({
   onChange,
   isEditing,
   placeholder,
-  type = "text",
   prefix,
 }: {
   label: string;
@@ -82,29 +78,27 @@ const Field = ({
   onChange: (v: string) => void;
   isEditing: boolean;
   placeholder?: string;
-  type?: string;
   prefix?: string;
 }) => (
-  <div className="flex flex-col gap-1.5">
-    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
-      <Icon className="w-3 h-3" strokeWidth={2} />
+  <div className="flex flex-col gap-1">
+    <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1">
+      <Icon className="w-2.5 h-2.5" strokeWidth={2} />
       {label}
     </label>
     <div className="relative flex items-center">
       {prefix && (
-        <span className="absolute left-3 text-xs text-neutral-400 font-medium select-none z-10">
+        <span className="absolute left-2.5 text-[10px] text-neutral-400 font-medium select-none z-10 whitespace-nowrap">
           {prefix}
         </span>
       )}
       <Input
-        type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={!isEditing}
         placeholder={isEditing ? placeholder : "—"}
         className={`
-          rounded-xl border-black/10 text-sm transition-all duration-200
-          ${prefix ? "pl-28" : ""}
+          h-8 rounded-lg border-black/10 text-xs transition-all duration-200
+          ${prefix ? "pl-[4.5rem]" : ""}
           ${
             !isEditing
               ? "bg-neutral-50 text-neutral-600 cursor-default disabled:opacity-100"
@@ -151,16 +145,7 @@ const Profile = () => {
   const handleSave = async () => {
     setIsSaving(true);
     const avatarFile = images[0] ?? null;
-    const res = await editProfile({
-      image: avatarFile,
-      headline: form.headline,
-      bio: form.bio,
-      location: form.location,
-      website: form.website,
-      github: form.github,
-      linkedin: form.linkedin,
-      twitter: form.twitter,
-    });
+    await editProfile({ image: avatarFile, ...form });
     setIsSaving(false);
     setIsEditing(false);
   };
@@ -185,7 +170,6 @@ const Profile = () => {
     setIsEditing(false);
   };
 
-  /* Avatar priority: new upload preview → saved URL → initials */
   const uploadedPreview = images[0]?.preview ?? null;
   const avatarSrc = uploadedPreview ?? (form.avatarUrl || null);
   const initials = user?.name
@@ -208,223 +192,264 @@ const Profile = () => {
   if (error) return <Error />;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        {/* Header */}
-        <div className="mb-8 flex items-end justify-between">
+    <div className="h-screen bg-neutral-50 flex flex-col overflow-hidden">
+      <div className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 flex flex-col min-h-0">
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between mb-6 shrink-0">
           <div>
-            <p className="text-[10px] font-bold text-neutral-400 tracking-widest uppercase mb-2">
+            <p className="text-[10px] font-bold text-neutral-400 tracking-widest uppercase mb-1">
               Account
             </p>
-            <h1 className="text-3xl font-bold tracking-tight text-violet-600">
+            <h1 className="text-2xl font-bold tracking-tight text-violet-600">
               My Profile
             </h1>
-            <p className="text-sm text-neutral-400 font-medium mt-1">
-              {profile
-                ? "Manage your public profile"
-                : "Set up your profile to get started"}
-            </p>
           </div>
-          {!isEditing ? (
-            <Button
-              onClick={() => setIsEditing(true)}
-              variant="outline"
-              className="gap-2 rounded-xl border-black/10 text-sm font-semibold hover:bg-neutral-100 transition-all"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              Edit Profile
-            </Button>
-          ) : (
-            <button
-              onClick={handleCancel}
-              className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 hover:text-neutral-700 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-              Cancel
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {isEditing && (
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 hover:text-neutral-700 transition-colors px-3 py-2"
+              >
+                <X className="w-3.5 h-3.5" />
+                Cancel
+              </button>
+            )}
+            {isEditing ? (
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="h-9 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-semibold text-sm shadow-md shadow-violet-200 gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <span className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Saving…
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setIsEditing(true)}
+                variant="outline"
+                className="h-9 gap-2 rounded-xl border-black/10 text-sm font-semibold hover:bg-neutral-100"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Edit Profile
+              </Button>
+            )}
+          </div>
         </div>
 
-        {/* Avatar + identity */}
-        <div className="bg-white border border-black/8 rounded-2xl p-6 shadow-sm mb-4">
-          <div className="flex items-center gap-5">
-            <div className="relative shrink-0">
-              {avatarSrc ? (
-                <img
-                  src={avatarSrc}
-                  alt={user?.name}
-                  className="w-18 h-18 rounded-2xl object-cover border border-black/10"
-                />
-              ) : (
-                <div className="w-18 h-18 rounded-2xl bg-violet-500 flex items-center justify-center border border-violet-400">
-                  <span className="text-2xl font-bold text-white">
-                    {initials}
-                  </span>
-                </div>
-              )}
-              {uploadedPreview && (
-                <span className="absolute -top-1.5 -right-1.5 text-[8px] font-bold uppercase tracking-wider bg-violet-600 text-white px-1.5 py-0.5 rounded-full border-2 border-white">
-                  New
-                </span>
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-bold text-neutral-900 truncate">
-                  {user?.name ?? "Your Name"}
-                </h2>
-                {user?.role && (
-                  <span
-                    className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${roleBadge[user.role] ?? roleBadge.ADMIN}`}
-                  >
-                    {user.role}
+        {/* ── 2-column body ── */}
+        <div className="flex-1 grid grid-cols-5 gap-4 min-h-0">
+          {/* LEFT col — avatar card (2/5) */}
+          <div className="col-span-2 flex flex-col gap-4">
+            {/* Identity card */}
+            <div className="bg-white border border-black/8 rounded-2xl p-5 shadow-sm flex flex-col items-center text-center flex-1">
+              {/* Avatar */}
+              <div className="relative mb-4 mt-2">
+                {avatarSrc ? (
+                  <img
+                    src={avatarSrc}
+                    alt={user?.name}
+                    className="w-20 h-20 rounded-2xl object-cover border border-black/10"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-violet-500 flex items-center justify-center border border-violet-400">
+                    <span className="text-2xl font-bold text-white">
+                      {initials}
+                    </span>
+                  </div>
+                )}
+                {uploadedPreview && (
+                  <span className="absolute -top-1.5 -right-1.5 text-[8px] font-bold uppercase tracking-wider bg-violet-600 text-white px-1.5 py-0.5 rounded-full border-2 border-white">
+                    New
                   </span>
                 )}
               </div>
-              <p className="text-sm text-neutral-400 mt-0.5 truncate">
+
+              <h2 className="text-base font-bold text-neutral-900">
+                {user?.name ?? "Your Name"}
+              </h2>
+              <p className="text-xs text-neutral-400 mt-0.5 truncate w-full px-2">
                 {user?.email ?? "—"}
               </p>
-              {(form.headline || isEditing) && (
-                <p className="text-xs text-neutral-500 font-medium mt-1 truncate">
-                  {form.headline || (isEditing ? "Add a headline…" : "")}
+
+              {user?.role && (
+                <span
+                  className={`mt-2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${roleBadge[user.role] ?? roleBadge.ADMIN}`}
+                >
+                  {user.role}
+                </span>
+              )}
+
+              {form.headline && (
+                <p className="text-[11px] text-neutral-500 font-medium mt-3 px-2 leading-relaxed">
+                  {form.headline}
                 </p>
+              )}
+
+              {form.location && (
+                <div className="flex items-center gap-1 mt-2 text-[10px] text-neutral-400">
+                  <MapPin className="w-2.5 h-2.5 shrink-0" strokeWidth={2} />
+                  {form.location}
+                </div>
+              )}
+
+              {/* Social icons row */}
+              {(form.github ||
+                form.linkedin ||
+                form.twitter ||
+                form.website) && (
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-black/5 w-full justify-center">
+                  {form.website && (
+                    <Globe
+                      className="w-4 h-4 text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+                      strokeWidth={1.8}
+                    />
+                  )}
+                  {form.github && (
+                    <Github
+                      className="w-4 h-4 text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+                      strokeWidth={1.8}
+                    />
+                  )}
+                  {form.linkedin && (
+                    <Linkedin
+                      className="w-4 h-4 text-neutral-400 hover:text-violet-500 transition-colors cursor-pointer"
+                      strokeWidth={1.8}
+                    />
+                  )}
+                  {form.twitter && (
+                    <Twitter
+                      className="w-4 h-4 text-neutral-400 hover:text-sky-500 transition-colors cursor-pointer"
+                      strokeWidth={1.8}
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Upload — edit mode */}
+              {isEditing && (
+                <div className="mt-4 pt-4 border-t border-black/5 w-full text-left">
+                  <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-2.5">
+                    Profile Photo
+                  </p>
+                  <FileUploadCompact
+                    key={fileUploadKey}
+                    maxFiles={1}
+                    accept="image/*"
+                    onFilesChange={(files) => setImages(files)}
+                  />
+                  {uploadedPreview && (
+                    <p className="text-[9px] text-violet-500 font-medium mt-2 flex items-center gap-1">
+                      <Check className="w-2.5 h-2.5" />
+                      New photo selected
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>
 
-          {/* File upload — edit mode only */}
-          {isEditing && (
-            <div className="mt-5 pt-5 border-t border-black/5">
-              <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
-                Profile Photo
+          {/* RIGHT col — fields (3/5) */}
+          <div className="col-span-3 flex flex-col gap-4 overflow-y-auto min-h-0">
+            {/* Basic info */}
+            <div className="bg-white border border-black/8 rounded-2xl p-5 shadow-sm shrink-0">
+              <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+                Basic Info
               </p>
-              <FileUploadCompact
-                key={fileUploadKey}
-                maxFiles={1}
-                accept="image/*"
-                onFilesChange={(files) => setImages(files)}
-              />
-              {uploadedPreview && (
-                <p className="text-[10px] text-violet-500 font-medium mt-2 flex items-center gap-1">
-                  <Check className="w-3 h-3" />
-                  New photo selected — will upload on Save
-                </p>
-              )}
+              <div className="flex flex-col gap-3">
+                <Field
+                  label="Headline"
+                  icon={Briefcase}
+                  value={form.headline}
+                  onChange={set("headline")}
+                  isEditing={isEditing}
+                  placeholder="e.g. Full Stack Developer · DSA Mentor"
+                />
+                <div className="flex flex-col gap-1">
+                  <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1">
+                    <FileText className="w-2.5 h-2.5" strokeWidth={2} />
+                    Bio
+                  </label>
+                  <Textarea
+                    value={form.bio}
+                    onChange={(e) => set("bio")(e.target.value)}
+                    disabled={!isEditing}
+                    placeholder={
+                      isEditing ? "Tell others a bit about yourself…" : "—"
+                    }
+                    rows={3}
+                    className={`
+                      rounded-lg border-black/10 text-xs resize-none transition-all duration-200
+                      ${!isEditing ? "bg-neutral-50 text-neutral-600 cursor-default disabled:opacity-100" : "bg-white focus-visible:ring-violet-300 focus-visible:border-violet-400"}
+                      ${!form.bio && !isEditing ? "text-neutral-300" : ""}
+                    `}
+                  />
+                </div>
+                <Field
+                  label="Location"
+                  icon={MapPin}
+                  value={form.location}
+                  onChange={set("location")}
+                  isEditing={isEditing}
+                  placeholder="e.g. Kozhikode, Kerala"
+                />
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Basic info */}
-        <div className="bg-white border border-black/8 rounded-2xl p-6 shadow-sm mb-4">
-          <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-4">
-            Basic Info
-          </p>
-          <div className="flex flex-col gap-4">
-            <Field
-              label="Headline"
-              icon={Briefcase}
-              value={form.headline}
-              onChange={set("headline")}
-              isEditing={isEditing}
-              placeholder="e.g. Full Stack Developer · DSA Mentor"
-            />
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
-                <FileText className="w-3 h-3" strokeWidth={2} />
-                Bio
-              </label>
-              <Textarea
-                value={form.bio}
-                onChange={(e) => set("bio")(e.target.value)}
-                disabled={!isEditing}
-                placeholder={
-                  isEditing ? "Tell others a bit about yourself…" : "—"
-                }
-                rows={3}
-                className={`
-                  rounded-xl border-black/10 text-sm resize-none transition-all duration-200
-                  ${!isEditing ? "bg-neutral-50 text-neutral-600 cursor-default disabled:opacity-100" : "bg-white focus-visible:ring-violet-300 focus-visible:border-violet-400"}
-                  ${!form.bio && !isEditing ? "text-neutral-300" : ""}
-                `}
-              />
+            {/* Links */}
+            <div className="bg-white border border-black/8 rounded-2xl p-5 shadow-sm shrink-0">
+              <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+                Links
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <Field
+                  label="Website"
+                  icon={Globe}
+                  value={form.website}
+                  onChange={set("website")}
+                  isEditing={isEditing}
+                  placeholder="yoursite.com"
+                  prefix="https://"
+                />
+                <Field
+                  label="GitHub"
+                  icon={Github}
+                  value={form.github}
+                  onChange={set("github")}
+                  isEditing={isEditing}
+                  placeholder="username"
+                  prefix="github.com/"
+                />
+                <Field
+                  label="LinkedIn"
+                  icon={Linkedin}
+                  value={form.linkedin}
+                  onChange={set("linkedin")}
+                  isEditing={isEditing}
+                  placeholder="username"
+                  prefix="linkedin.com/"
+                />
+                <Field
+                  label="Twitter / X"
+                  icon={Twitter}
+                  value={form.twitter}
+                  onChange={set("twitter")}
+                  isEditing={isEditing}
+                  placeholder="username"
+                  prefix="x.com/"
+                />
+              </div>
             </div>
-            <Field
-              label="Location"
-              icon={MapPin}
-              value={form.location}
-              onChange={set("location")}
-              isEditing={isEditing}
-              placeholder="e.g. Kozhikode, Kerala"
-            />
           </div>
         </div>
-
-        {/* Links */}
-        <div className="bg-white border border-black/8 rounded-2xl p-6 shadow-sm mb-6">
-          <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-4">
-            Links
-          </p>
-          <div className="flex flex-col gap-4">
-            <Field
-              label="Website"
-              icon={Globe}
-              value={form.website}
-              onChange={set("website")}
-              isEditing={isEditing}
-              placeholder="yoursite.com"
-              prefix="https://"
-            />
-            <Field
-              label="GitHub"
-              icon={Github}
-              value={form.github}
-              onChange={set("github")}
-              isEditing={isEditing}
-              placeholder="username"
-              prefix="github.com/"
-            />
-            <Field
-              label="LinkedIn"
-              icon={Linkedin}
-              value={form.linkedin}
-              onChange={set("linkedin")}
-              isEditing={isEditing}
-              placeholder="username"
-              prefix="linkedin.com/in/"
-            />
-            <Field
-              label="Twitter / X"
-              icon={Twitter}
-              value={form.twitter}
-              onChange={set("twitter")}
-              isEditing={isEditing}
-              placeholder="username"
-              prefix="x.com/"
-            />
-          </div>
-        </div>
-
-        {/* Save */}
-        {isEditing && (
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="w-full h-11 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-semibold text-sm shadow-md shadow-violet-200 transition-all duration-200 gap-2"
-          >
-            {isSaving ? (
-              <>
-                <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                Saving…
-              </>
-            ) : (
-              <>
-                <Check className="w-4 h-4" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        )}
       </div>
     </div>
   );

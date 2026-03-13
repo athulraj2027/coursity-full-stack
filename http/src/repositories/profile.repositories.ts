@@ -24,7 +24,7 @@ const putUserProfile = async (userId: string, data: any) => {
     },
     update: {
       bio: data.bio,
-      avatarUrl: data.avatarUrl,
+      avatarUrl: data.imageUrl,
       headline: data.headline,
       website: data.website,
       github: data.github,
@@ -35,7 +35,7 @@ const putUserProfile = async (userId: string, data: any) => {
     create: {
       userId: userId,
       bio: data.bio,
-      avatarUrl: data.avatarUrl,
+      avatarUrl: data.imageUrl,
       headline: data.headline,
       website: data.website,
       github: data.github,
