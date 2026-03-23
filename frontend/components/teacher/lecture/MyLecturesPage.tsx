@@ -70,7 +70,16 @@ const MyLecturesPage = () => {
       title: lecture.title,
       courseTitle: lecture.course.title,
       status: lecture.status,
-      startTime: new Date(lecture.startTime).toLocaleString(),
+      startTime: new Date(lecture.startTime).toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  weekday: "short",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+}),
       createdAt: new Date(lecture.createdAt).toLocaleDateString(),
       rawStartTime: new Date(lecture.startTime),
       rawCreatedAt: new Date(lecture.createdAt),
@@ -168,7 +177,7 @@ const MyLecturesPage = () => {
       cell: ({ row }) => (
         <LectureActions
           lectureId={row.original.id}
-          startingTime={row.original.startTime}
+          startingTime={row.original.rawStartTime}
           status={row.original.status}
         />
       ),

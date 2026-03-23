@@ -42,10 +42,11 @@ const CreateLectureCard = ({
     if (startTime <= new Date())
       return toast.error("Lecture start time must be in the future");
 
+    const startTimeUTC = new Date(startTime.toISOString());
     setIsSubmitting(true);
     try {
       createLectureApi(
-        { title: formData.title.trim(), startTime, courseId },
+        { title: formData.title.trim(), startTime: startTimeUTC, courseId },
         {
           onSuccess: () => {
             toast.success("Lecture created successfully");

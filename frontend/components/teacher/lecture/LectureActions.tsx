@@ -19,7 +19,7 @@ const LectureActions = ({
   status,
 }: {
   lectureId: string;
-  startingTime: string;
+  startingTime: Date;
   status: "NOT_STARTED" | "STARTED" | "COMPLETED";
 }) => {
   const [modal, setModal] = useState(false);
@@ -37,7 +37,7 @@ const LectureActions = ({
   const canStartLecture = () => {
     if (!startingTime) return false;
     const now = new Date();
-    const start = new Date(startingTime);
+    const start = startingTime;
     const tenMinutesBefore = start.getTime() - 10 * 60 * 1000;
     const twentyMinutesAfter = start.getTime() + 20 * 60 * 1000;
     return (

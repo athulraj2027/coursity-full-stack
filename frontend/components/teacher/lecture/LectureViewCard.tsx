@@ -29,13 +29,17 @@ const LectureViewCard = ({ lectureId }: { lectureId: string }) => {
 
   const { title, startTime, status, createdAt, course, attendance } = data;
 
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const formatDateTime = (date: string) =>
-    new Date(date).toLocaleString("en-US", {
+    new Date(date).toLocaleString("en-IN", {
+      timeZone: userTimeZone,
       year: "numeric",
       month: "short",
       day: "numeric",
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
+      hour12: true,
     });
 
   return (
