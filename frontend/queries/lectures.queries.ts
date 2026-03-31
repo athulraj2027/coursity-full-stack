@@ -105,6 +105,7 @@ export const useMyLectureQueryById = (lectureId: string) =>
   useQuery<LectureData>({
     queryKey: ["my-lecture", lectureId],
     queryFn: () => getMyLectureByIdForOwnerApi(lectureId),
+      retry: 3,
   });
 
 export const useScheduledLecturesQuery = () =>
@@ -117,6 +118,7 @@ export const useLectureStatusQuery = (lectureId: string) =>
   useQuery({
     queryKey: ["lecture-status"],
     queryFn: () => getLectureStatus(lectureId),
+      retry: 3,
   });
 
 export const useAllLecturesQuery = () =>

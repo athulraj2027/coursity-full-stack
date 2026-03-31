@@ -484,8 +484,8 @@ export const useJoinRoom = () => {
     }
   };
 
-  const leaveRoom = async (lectureId: string) => {
-    socket.emit("leave-room", { lectureId });
+  const leaveRoom = async () => {
+    socket.emit("leave-room",);
   };
 
   const raiseHand = async () => {};

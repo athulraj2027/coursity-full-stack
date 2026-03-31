@@ -11,4 +11,5 @@ export const useTeacherProfileQuery = (id: string) =>
   useQuery({
     queryKey: ["teacher-profile", id],
     queryFn: () => getTeacherProfileApi(id),
+    retry: 3,
   });

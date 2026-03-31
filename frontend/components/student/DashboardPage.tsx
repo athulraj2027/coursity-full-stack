@@ -237,8 +237,9 @@ export default function DashboardPage() {
   const dashboard = data as DashboardData | undefined;
 
   const totalSpent =
-    dashboard?.enrollments.reduce((s, e) => s + e.payment.amount, 0) ?? 0;
-
+    dashboard?.enrollments?.reduce((s, e) => s + (e.payment?.amount ?? 0), 0) ??
+    0;
+    
   return (
     <div className="min-h-screen bg-slate-50 text-neutral-800">
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-7">
@@ -292,7 +293,7 @@ export default function DashboardPage() {
               <StatCard
                 icon={IndianRupee}
                 label="Total Spent"
-                value={formatCurrency(totalSpent/100)}
+                value={formatCurrency(totalSpent / 100)}
                 sub="Across all courses"
                 color={colors.emerald}
               />

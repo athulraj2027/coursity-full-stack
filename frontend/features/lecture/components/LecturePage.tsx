@@ -7,6 +7,7 @@ import Meeting from "./Meeting/Meeting";
 import { useLectureAccess } from "../hooks/useLectureAccess";
 import { useSocketStatus } from "../hooks/useSocketStatus";
 import { Video, Wifi, WifiOff, Radio } from "lucide-react";
+import LectureCompleted from "./LectureCompleted";
 
 const LecturePageComponent = ({ lectureId }: { lectureId: string }) => {
   const { isLoading, mode, setMode, role, error, lectureStatus } =
@@ -17,6 +18,7 @@ const LecturePageComponent = ({ lectureId }: { lectureId: string }) => {
     setMode("MEETING");
   };
 
+  if (lectureStatus === "COMPLETED") return <LectureCompleted />;
   if (error) return <NoAccess error={error} />;
   if (isLoading || !role) return <Loading />;
 

@@ -9,7 +9,7 @@ import {
 } from "@/services/payment.services";
 import { toast } from "sonner";
 import { Loader2, CreditCard } from "lucide-react";
-import EnrollmentSuccess from "./EnrollmentSuccess";
+import { useRouter } from "next/navigation";
 
 const EnrollBtn = ({
   courseId,
@@ -18,13 +18,8 @@ const EnrollBtn = ({
   courseId: string;
   setLoadingProp: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
-
-  // ✅ Show success component inline once payment is done
-  if (enrollmentId) {
-    return <EnrollmentSuccess enrollmentId={enrollmentId} />;
-  }
 
   const handleEnroll = async () => {
     try {
@@ -49,8 +44,8 @@ const EnrollBtn = ({
             courseId,
           });
           setLoadingProp(false);
+          router.push(`/student/enrolled/${data.enrollment_id}`);
           toast.success("Enrolled successfully 🎉");
-          setEnrollmentId(data.enrollment_id); // ← triggers inline success view
         },
       };
 

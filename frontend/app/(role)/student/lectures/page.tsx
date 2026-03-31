@@ -128,7 +128,7 @@ export default function LecturesPage() {
   const { isLoading, data, error } = useScheduledLecturesQuery();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState<SortOption>("date-asc");
+  const [sortOption, setSortOption] = useState<SortOption>("date-desc");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "upcoming" | "completed" | "live"
   >("all");

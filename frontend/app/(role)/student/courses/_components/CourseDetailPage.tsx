@@ -37,9 +37,8 @@ const fmtPrice = (paise: number) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0,
   }).format(paise / 100);
-
+  
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", {
     day: "numeric",

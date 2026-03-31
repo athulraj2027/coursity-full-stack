@@ -74,6 +74,7 @@ export const useMyCourseQueryById = (courseId: string) =>
   useQuery({
     queryKey: ["my-course", courseId],
     queryFn: () => fetchCourseByIdForOwner(courseId),
+    retry: 3,
   });
 
 export const useAllCoursesQueryPublic = () =>
@@ -86,6 +87,7 @@ export const useCourseByIdQueryPublic = (courseId: string) =>
   useQuery<PublicCourse>({
     queryKey: ["course", courseId],
     queryFn: () => fetchCourseByIdForPublic(courseId),
+    retry: 3,
   });
 
 export const useEnrolledCoursesQuery = () =>
@@ -95,6 +97,7 @@ export const useEnrolledCourseQuery = (courseId: string) =>
   useQuery({
     queryKey: ["enrolled-course", courseId],
     queryFn: () => fetchEnrolledCourseById(courseId),
+    retry: 3,
   });
 
 export const useAllCoursesAdminQuery = () =>
@@ -104,4 +107,5 @@ export const useCourseByIdQueryAdmin = (courseId: string) =>
   useQuery({
     queryKey: ["course", courseId],
     queryFn: () => fetchCourseByIdAdmin(courseId),
+    retry: 3,
   });

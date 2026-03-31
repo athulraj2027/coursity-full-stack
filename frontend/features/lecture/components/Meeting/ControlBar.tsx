@@ -1,3 +1,5 @@
+"use client";
+import { useMe } from "@/queries/auth.queries";
 import {
   Mic,
   MicOff,
@@ -18,7 +20,7 @@ type ControlBarProps = {
   stopMic: () => Promise<void>;
   startScreenShare: (lectureId: string) => Promise<void>;
   stopScreenShare: () => Promise<void>;
-  leaveRoom: (lectureId: string) => void;
+  leaveRoom: () => void;
   raiseHand: () => void;
   lowerHand: () => void;
   lectureId: string;
@@ -72,6 +74,7 @@ const ControlBar = ({
   lowerHand,
   raiseHand,
 }: ControlBarProps) => {
+  const { data } = useMe();
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
@@ -108,8 +111,8 @@ const ControlBar = ({
   };
 
   const handleLeave = async () => {
-    await leaveRoom(lectureId);
-    window.location.href = "/";
+    await leaveRoom();
+    window.location.href = `/lecture/left/${lectureId}`;
   };
 
   const handleHandToggle = async () => {
