@@ -38,7 +38,6 @@ export const signupApi = (data: {
 
 export const signinApi = (data: {
   email: string;
-  role: Role;
   password: string;
 }) =>
   apiRequest<SigninResponse, typeof data>({

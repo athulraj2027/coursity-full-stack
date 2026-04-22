@@ -2,54 +2,20 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { GoogleLogin } from "@react-oauth/google";
-
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { areFieldsFilled } from "@/lib/handleFormChange";
 import { SIGNIN_FORM_REQUIRED_FIELDS } from "@/constants/authForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { BookOpen, GraduationCap, Loader2, Sun } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { googleAuthApi, SigninResponse } from "@/services/auth.services";
 import { toast } from "sonner";
-
-const DarkLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-    {children}
-  </label>
-);
-
-const RoleOption = ({
-  id,
-  value,
-  label,
-  checked,
-}: {
-  id: string;
-  value: string;
-  label: string;
-  icon: React.ElementType;
-  checked: boolean;
-}) => (
-  <label
-    htmlFor={id}
-    className={`flex flex-1 items-center gap-2 px-3 py-2.5 rounded-sm border cursor-pointer transition-all duration-150 ${
-      checked
-        ? "bg-indigo-500/15 border-indigo-500/50 text-indigo-300"
-        : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
-    }`}
-  >
-    <RadioGroupItem value={value} id={id} className="sr-only" />
-    {/* <Icon className="w-3.5 h-3.5 shrink-0" strokeWidth={1.8} /> */}
-    <span className="text-xs font-semibold">{label}</span>
-  </label>
-);
 
 const SigninForm = () => {
   const router = useRouter();
   const { signinUser } = useAuth();
   const [isValid, setIsValid] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("");
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,6 +44,14 @@ const SigninForm = () => {
       onChange={handleFormChange}
       onSubmit={onSubmit}
     >
+      {isGoogleLoading && (
+        <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-white">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+          <p className="mt-4 text-slate-600 font-medium animate-pulse">
+            Authenticating with Google...
+          </p>
+        </div>
+      )}
       {/* Email */}
       <div className="space-y-1.5">
         <label
@@ -94,39 +68,6 @@ const SigninForm = () => {
           required
           className="bg-white/8 border-white/10 text-white placeholder:text-slate-600  focus-visible:ring-indigo-500/40 focus-visible:border-indigo-500/50"
         />
-      </div>
-
-      {/* Role */}
-      <div className="flex flex-col gap-1.5">
-        <DarkLabel>I am a</DarkLabel>
-        <RadioGroup
-          className="flex gap-2 border-0"
-          defaultValue=""
-          name="role"
-          onValueChange={setSelectedRole}
-        >
-          <RoleOption
-            id="student"
-            value="STUDENT"
-            label="Student"
-            icon={GraduationCap}
-            checked={selectedRole === "STUDENT"}
-          />
-          <RoleOption
-            id="teacher"
-            value="TEACHER"
-            label="Teacher"
-            icon={BookOpen}
-            checked={selectedRole === "TEACHER"}
-          />
-          <RoleOption
-            id="admin"
-            value="ADMIN"
-            label="Admin"
-            icon={Sun}
-            checked={selectedRole === "ADMIN"}
-          />
-        </RadioGroup>
       </div>
 
       {/* Password */}
@@ -167,14 +108,24 @@ const SigninForm = () => {
           <GoogleLogin
             width={324}
             onSuccess={(credentialResponse) => {
+              // Start the full-screen loader
+              setIsGoogleLoading(true);
+
               googleAuthApi(credentialResponse.credential)
                 .then((res: SigninResponse) => {
                   toast.success("Logged in successfully");
                   router.push(`/${res.role.toLowerCase()}`);
+                  // Note: We don't necessarily need to set loading to false
+                  // here because the router is redirecting us away.
                 })
-                .catch((error: { success: boolean; message: string }) =>
-                  toast.error(error.message),
-                );
+                .catch((error: { success: boolean; message: string }) => {
+                  toast.error(error.message);
+                  setIsGoogleLoading(false); // Stop loader on error so user can try again
+                });
+            }}
+            onError={() => {
+              toast.error("Google Login Failed");
+              setIsGoogleLoading(false);
             }}
           />
         </div>

@@ -20,10 +20,9 @@ const signupUser = async (
   });
 };
 
-const signinUser = async (email: string, password: string, role: Role) => {
+const signinUser = async (email: string, password: string) => {
   const user = await AuthRepositories.signin(email);
   if (!user) throw new AppError("No user found", 400);
-  if (role !== user.role) throw new AppError("Invalid role", 400);
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new AppError("Invalid password", 400);

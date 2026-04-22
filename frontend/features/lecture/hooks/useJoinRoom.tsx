@@ -300,7 +300,7 @@ export const useJoinRoom = () => {
             lectureId,
           },
           ({ success }: { success: boolean; producerId: string }) => {
-            console.log("pause : ", success);
+            // console.log("pause : ", success);
           },
         );
       });

@@ -66,7 +66,6 @@ export const useAuth = () => {
     ): Promise<SigninResponse | { success: false }> => {
       const rawData = {
         email: formData.get("email"),
-        role: formData.get("role"),
         password: formData.get("password"),
       };
 
@@ -87,7 +86,6 @@ export const useAuth = () => {
       try {
         const res = await signinApi({
           email: data.email,
-          role: data.role,
           password: data.password,
         });
 

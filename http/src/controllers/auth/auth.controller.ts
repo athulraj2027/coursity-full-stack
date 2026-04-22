@@ -20,8 +20,8 @@ const signup = async (req: Request, res: Response) => {
 };
 
 const signin = async (req: Request, res: Response) => {
-  const { email, password, role } = req.body;
-  const user = await AuthServices.signinUser(email, password, role);
+  const { email, password } = req.body;
+  const user = await AuthServices.signinUser(email, password);
   console.log("user  :", user);
   const token = generateToken(user.id, user.role, user.name, user.isVerified);
   console.log("token : ", token);

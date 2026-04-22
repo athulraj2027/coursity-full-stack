@@ -16,7 +16,7 @@ export async function createTransport(
     listenIps: [
       {
         ip: "0.0.0.0",
-        announcedIp: ANNOUNCED_IP as string,
+        announcedIp: ANNOUNCED_IP ,
       },
     ],
     enableUdp: true,
@@ -35,10 +35,10 @@ export async function connectTransport(
   return { success: true };
 }
 
-export async function createPlainTransport(router: Router) {
-  const transport: PlainTransport = await router.createPlainTransport({
-    listenIp: ANNOUNCED_IP,
-    rtcpMux: false,
-    comedia: false,
-  });
-}
+// export async function createPlainTransport(router: Router) {
+//   const transport: PlainTransport = await router.createPlainTransport({
+//     listenIp: ANNOUNCED_IP,
+//     rtcpMux: false,
+//     comedia: false,
+//   });
+// }

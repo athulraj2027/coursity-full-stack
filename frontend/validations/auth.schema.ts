@@ -17,7 +17,6 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
   email: z.string().email(),
-  role: z.enum(["STUDENT", "TEACHER", "ADMIN"]),
   password: z.string().min(6),
 });
 

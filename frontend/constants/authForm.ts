@@ -6,4 +6,4 @@ export const SIGNUP_FORM_REQUIRED_FIELDS = [
   "confirmPassword",
 ];
 
-export const SIGNIN_FORM_REQUIRED_FIELDS = ["email", "role", "password"];
+export const SIGNIN_FORM_REQUIRED_FIELDS = ["email", "password"];
