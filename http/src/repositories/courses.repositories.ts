@@ -164,7 +164,7 @@ const findByIdInternal = async (courseId: string) => {
 };
 
 // Public single course view
-const findByIdPublic = async (courseId: string, studentId: string) => {
+const findByIdPublic = async (courseId: string, studentId?: string) => {
   const course = await prisma.course.findFirst({
     where: {
       id: courseId,
@@ -211,10 +211,11 @@ const findByIdPublic = async (courseId: string, studentId: string) => {
   });
 
   if (!course) return null;
+
   return {
     ...course,
-    isEnrolled: !!studentId && (course.enrollments?.length ?? 0) > 0,
-    enrollments: undefined,
+    isEnrolled: studentId ? course.enrollments.length > 0 : false,
+    enrollments: undefined, // hide internal data
   };
 };
 

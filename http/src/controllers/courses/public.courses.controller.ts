@@ -15,7 +15,7 @@ const getCourse = async (req: Request, res: Response) => {
   const course = await CourseServices.getCourseById(id as string, req.user);
   if (!course)
     return res
-      .status(404)
+      .status(400)
       .json({ success: false, message: "Course not found" });
   return res.status(200).json(course);
 };

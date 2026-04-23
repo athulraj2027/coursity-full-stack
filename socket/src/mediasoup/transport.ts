@@ -1,12 +1,9 @@
 import type {
   DtlsParameters,
-  PlainTransport,
   Router,
   Transport,
   WebRtcTransport,
 } from "mediasoup/types";
-
-const ANNOUNCED_IP = process.env.ANNOUNCED_IP as string;
 
 export async function createTransport(
   router: Router,
@@ -16,7 +13,7 @@ export async function createTransport(
     listenIps: [
       {
         ip: "0.0.0.0",
-        announcedIp: ANNOUNCED_IP ,
+        announcedIp: process.env.ANNOUNCED_IP as string,
       },
     ],
     enableUdp: true,
@@ -34,6 +31,7 @@ export async function connectTransport(
   await transport.connect({ dtlsParameters });
   return { success: true };
 }
+<<<<<<< HEAD
 
 // export async function createPlainTransport(router: Router) {
 //   const transport: PlainTransport = await router.createPlainTransport({
@@ -42,3 +40,5 @@ export async function connectTransport(
 //     comedia: false,
 //   });
 // }
+=======
+>>>>>>> parent of fee2790 (fix(ui && lecture))

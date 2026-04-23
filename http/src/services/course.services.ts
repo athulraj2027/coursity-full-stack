@@ -17,7 +17,7 @@ const getCourseById = async (courseId: string, user: any) => {
     case "ADMIN":
       return CourseRepositories.findByIdInternal(courseId);
     case "STUDENT":
-      return CourseRepositories.findByIdPublic(courseId, user.id);
+      return CourseRepositories.findByIdPublic(courseId);
     case "TEACHER":
       return CourseRepositories.findByIdInternalOwnerView(courseId, user.id);
   }

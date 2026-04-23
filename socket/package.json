@@ -16,7 +16,6 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
-    "ffmpeg": "^0.0.4",
     "jsonwebtoken": "^9.0.3",
     "mediasoup": "^3.19.17",
     "socket.io": "^4.8.3"
