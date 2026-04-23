@@ -31,14 +31,3 @@ export async function connectTransport(
   await transport.connect({ dtlsParameters });
   return { success: true };
 }
-<<<<<<< HEAD
-
-// export async function createPlainTransport(router: Router) {
-//   const transport: PlainTransport = await router.createPlainTransport({
-//     listenIp: ANNOUNCED_IP,
-//     rtcpMux: false,
-//     comedia: false,
-//   });
-// }
-=======
->>>>>>> parent of fee2790 (fix(ui && lecture))

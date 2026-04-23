@@ -138,7 +138,7 @@ export async function DisconnectHandler(socket: Socket) {
   }
 }
 
-export async function LeaveRoomHandler(socket: Socket, lectureId: string) {
+export async function LeaveRoomHandler(socket: Socket) {
   const { username, userId, role } = socket;
   const user = userStore.get(socket.id);
   if (!user) return;
@@ -158,7 +158,7 @@ export async function LeaveRoomHandler(socket: Socket, lectureId: string) {
     console.log("emitting the lecture ended");
     try {
       await callInternalApi(
-        `/lectures/teacher/${lectureId}/end`,
+        `/lectures/teacher/${user.lectureId}/end`,
         "POST",
         {},
         { userId, role },
@@ -168,7 +168,7 @@ export async function LeaveRoomHandler(socket: Socket, lectureId: string) {
     }
 
     socket.to(user.lectureId).emit("lecture-ended");
-    socket.to(lectureId).socketsLeave(lectureId);
+    socket.to(user.lectureId).socketsLeave(user.lectureId);
     roomStore.removeRoom(user.lectureId);
   } else {
     socket

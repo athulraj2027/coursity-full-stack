@@ -14,9 +14,7 @@ export function roomSocket(socket: Socket, io: Server) {
   socket.on("join-room", async ({ lectureId }, cb) =>
     JoinRoomHandler(io, socket, lectureId, cb),
   );
-  socket.on("leave-room", async ({ lectureId }) =>
-    LeaveRoomHandler(socket, lectureId),
-  );
+  socket.on("leave-room", async () => LeaveRoomHandler(socket));
   socket.on("close-room", ({ lectureId }) =>
     CloseRoomHandler(socket, lectureId),
   );
