@@ -20,4 +20,14 @@ export const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+export const emailSchema = z.object({
+  email: z.string().email(),
+});
+
+export const passwordSchema = z.object({
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+});
+
+export type EmailInput = z.infer<typeof emailSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

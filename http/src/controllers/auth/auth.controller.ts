@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import AuthServices from "../../services/auth.services.js";
 import generateToken from "../../utils/generateToken.js";
 import { clearAuthCookie, setAuthCookie } from "../../utils/cookie.js";
+import { sendEmail } from "../../helpers/resend.js";
 
 const signup = async (req: Request, res: Response) => {
   const { name, email, role, password } = req.body;
@@ -59,4 +60,92 @@ const me = async (req: Request, res: Response) => {
   });
 };
 
-export default { signin, signup, me, logout };
+const generatePasswordToken = async (req: Request, res: Response) => {
+  let user;
+  console.log(req.body);
+  const { email } = req.body;
+  if (!email) {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "No user found",
+      });
+    }
+    user = await AuthServices.getUserById(userId);
+  } else user = await AuthServices.getUserByEmail(email);
+
+  if (!user)
+    return res.status(401).json({
+      success: false,
+      message: "Invalid email.Please enter your email address correctly",
+    });
+
+  const existingToken = await AuthServices.checkResetToken(user);
+  if (existingToken) {
+    if (existingToken.expiresAt > new Date()) {
+      return res.status(403).json({
+        success: false,
+        message: "Link already sent. Please wait for 5 mins to request again.",
+      });
+    } else {
+      await AuthServices.deleteResetToken(user);
+    }
+  }
+
+  const token = await AuthServices.createResetToken(user);
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+  await sendEmail({
+    to: user.email,
+    subject: "Coursity Account Password Reset",
+    html: `
+    <h2>Password Reset Request</h2>
+
+    <p>Hello ${user.name},</p>
+
+    <p>Click the button below to reset your password:</p>
+
+    <a
+      href="${resetLink}"
+      style="
+        display:inline-block;
+        padding:12px 20px;
+        background:#4f46e5;
+        color:white;
+        text-decoration:none;
+        border-radius:6px;
+      "
+    >
+      Reset Password
+    </a>
+
+    <p>This link will expire in 30 minutes.</p>
+
+    <p>If you didn't request this, you can safely ignore this email.</p>
+
+    <p>Team Coursity</p>
+  `,
+  });
+
+  return res.status(200).json({
+    success: true,
+  });
+};
+
+const changePassword = async (req: Request, res: Response) => {
+  const { password, token } = req.body;
+  await AuthServices.verifyResetToken(token, password);
+  return res.status(200).json({
+    success: true,
+  });
+};
+
+export default {
+  signin,
+  signup,
+  me,
+  logout,
+  generatePasswordToken,
+  changePassword,
+};

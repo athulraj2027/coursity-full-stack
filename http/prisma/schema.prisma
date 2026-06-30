@@ -104,6 +104,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  passwordResetToken  PasswordResetToken?
 }
 
 model Profile {
@@ -250,4 +252,17 @@ model Payment {
 
   @@index([studentId])
   @@index([courseId])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(uuid())
+  token      String
+  expiresAt  DateTime
+
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([token])
 }

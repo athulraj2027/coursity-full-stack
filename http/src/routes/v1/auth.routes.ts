@@ -8,6 +8,15 @@ const router = express.Router();
 
 router.post("/signup", asyncHandler(AuthController.signup));
 router.post("/signin", asyncHandler(AuthController.signin));
+router.post(
+  "/change-password",
+  asyncHandler(AuthController.generatePasswordToken),
+);
+
+router.post(
+  "/set-new-password",
+  asyncHandler(AuthController.changePassword),
+);
 router.post("/google", asyncHandler(GoogleAuthController.googleLogin));
 router.post("/logout", authMiddleware, asyncHandler(AuthController.logout));
 router.get("/me", authMiddleware, asyncHandler(AuthController.me));

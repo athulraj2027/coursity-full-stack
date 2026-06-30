@@ -1,8 +1,15 @@
 import { useCallback } from "react";
-import { loginSchema, registerSchema } from "@/validations/auth.schema";
+import {
+  emailSchema,
+  loginSchema,
+  passwordSchema,
+  registerSchema,
+} from "@/validations/auth.schema";
 import { toast } from "sonner";
 import {
   logoutApi,
+  resetPasswordApi,
+  setNewPasswordApi,
   signinApi,
   SigninResponse,
   signupApi,
@@ -119,5 +126,73 @@ export const useAuth = () => {
     }
   }, [queryClient]);
 
-  return { signupUser, signinUser, logoutUser };
+  const createResetLink = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (formData: FormData): Promise<any> => {
+      const rawData = { email: formData.get("email") };
+      const result = emailSchema.safeParse(rawData);
+      if (!result.success) {
+        const fieldErrors = result.error.flatten().fieldErrors;
+        const firstError: string = Object.values(fieldErrors)[0]?.[0];
+        if (firstError) {
+          console.log(firstError);
+          toast.error(firstError);
+          return { success: false };
+        }
+      }
+      const data = result.data;
+      console.log("data : ", data);
+      if (!data) return { success: false };
+
+      try {
+        const res = await resetPasswordApi({ email: data.email });
+        toast.success("Email has been sent. Please check your email");
+        return res;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        toast.error(err.message);
+        console.log(err);
+        return { success: false };
+      }
+    },
+    [],
+  );
+
+  const resetPassword = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (formData: FormData, token: string): Promise<any> => {
+      const rawData = {
+        password: formData.get("password"),
+        confirmPassword: formData.get("confirmPassword"),
+      };
+
+      const result = passwordSchema.safeParse(rawData);
+      if (!result.success) {
+        const fieldErrors = result.error.flatten().fieldErrors;
+        const firstError: string = Object.values(fieldErrors)[0]?.[0];
+        if (firstError) {
+          console.log(firstError);
+          toast.error(firstError);
+          return { success: false };
+        }
+      }
+      const data = result.data;
+      console.log("data : ", data);
+      if (!data) return { success: false };
+
+      try {
+        const res = await setNewPasswordApi({ password: data.password, token });
+        toast.success("New password has been set. Try logging in now");
+        return res;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        toast.error(err.message);
+        console.log(err);
+        return { success: false };
+      }
+    },
+    [],
+  );
+
+  return { signupUser, signinUser, logoutUser, createResetLink, resetPassword };
 };

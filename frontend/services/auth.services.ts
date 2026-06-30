@@ -36,12 +36,23 @@ export const signupApi = (data: {
     body: data,
   });
 
-export const signinApi = (data: {
-  email: string;
-  password: string;
-}) =>
+export const signinApi = (data: { email: string; password: string }) =>
   apiRequest<SigninResponse, typeof data>({
     path: "/auth/signin",
+    method: "POST",
+    body: data,
+  });
+
+export const resetPasswordApi = (data: { email: string }) =>
+  apiRequest({
+    path: "/auth/change-password",
+    method: "POST",
+    body: data,
+  });
+
+export const setNewPasswordApi = (data: { password: string; token: string }) =>
+  apiRequest({
+    path: "/auth/set-new-password",
     method: "POST",
     body: data,
   });

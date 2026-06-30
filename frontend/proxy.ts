@@ -15,12 +15,15 @@ export async function proxy(request: NextRequest) {
   const token = request.cookies.get("auth_token")?.value;
   console.log("token received : ", token);
 
+  const isPublicRoute =
+    PUBLIC_ROUTES.includes(pathname) || pathname.startsWith("/reset-password/");
+
   if (pathname.startsWith("/lecture")) {
     if (!token) return NextResponse.redirect(new URL("/sign-in", request.url));
     return NextResponse.next();
   }
 
-  if (!token && !PUBLIC_ROUTES.includes(pathname))
+  if (!token && !isPublicRoute)
     return NextResponse.redirect(new URL("/sign-in", request.url));
 
   if (token) {

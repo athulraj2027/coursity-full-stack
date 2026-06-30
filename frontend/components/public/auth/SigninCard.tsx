@@ -23,6 +23,16 @@ const SigninCard = () => {
 
         {/* Footer */}
         <p className="text-center text-xs text-slate-500 mt-5 font-medium">
+          Forgot password?{" "}
+          <Link
+            href="/forgot-password"
+            className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors duration-150"
+          >
+            Reset password
+          </Link>
+        </p>
+
+        <p className="text-center text-xs text-slate-500 mt-5 font-medium">
           Don&apos;t have an account?{" "}
           <Link
             href="/sign-up"
