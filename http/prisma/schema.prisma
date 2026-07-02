@@ -43,6 +43,41 @@ enum WalletTransactionType {
   PAYOUT
 }
 
+enum NotificationType {
+  NEW_USER_JOINED
+
+  COURSE_PUBLISHED
+  COURSE_APPROVED
+  COURSE_REJECTED
+
+  LECTURE_CREATED
+  LECTURE_UPDATED
+  LECTURE_CANCELLED
+  LECTURE_STARTED
+
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_SUBMITTED
+  ASSIGNMENT_GRADED
+
+  ENROLLMENT_CREATED
+
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  REFUND_COMPLETED
+
+  ANNOUNCEMENT
+
+  SYSTEM
+}
+
+enum NotificationEntity {
+  COURSE
+  LECTURE
+  ASSIGNMENT
+  PAYMENT
+  ENROLLMENT
+}
+
 //////////////////////
 // MODELS
 //////////////////////
@@ -101,6 +136,7 @@ model User {
   attendance   Attendance[]
   participants Participant[]
   payments     Payment[]
+  notifications  Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -265,4 +301,30 @@ model PasswordResetToken {
   createdAt  DateTime @default(now())
 
   @@index([token])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+
+  title       String
+  message     String
+
+  type        NotificationType
+
+  isRead      Boolean  @default(false)
+
+  // Who receives this notification
+  userId       String
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // What this notification is about
+  entityType   NotificationEntity?
+  entityId     String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
 }

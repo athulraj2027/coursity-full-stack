@@ -11,6 +11,7 @@ import walletRoutes from "./walletRoutes/wallet.routes.js";
 import userRoutes from "./users.routes.js";
 import otpRoutes from "./otp.routes.js";
 import profileRoutes from "./profile.routes.js";
+import notificationRoutes from "./notification.routes.js";
 import { authMiddleware } from "../../middlewares/auth.middleware.js";
 import { roleMiddleware } from "../../middlewares/role.middleware.js";
 
@@ -28,5 +29,6 @@ router.use("/dashboard", authMiddleware, dashboardRoutes);
 router.use("/wallet", authMiddleware, walletRoutes);
 router.use("/profile", authMiddleware, profileRoutes);
 router.use("/users", authMiddleware, roleMiddleware("ADMIN"), userRoutes);
+router.use("/notifications", authMiddleware, notificationRoutes);
 
 export default router;

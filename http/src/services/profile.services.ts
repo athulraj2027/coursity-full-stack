@@ -2,11 +2,13 @@ import profileRepositories from "../repositories/profile.repositories.js";
 import { AppError } from "../utils/AppError.js";
 
 const getUserProfile = async (userId: string) => {
-  return await profileRepositories.getUserProfile(userId);
+  const profile = await profileRepositories.getUserProfile(userId);
+  if (!profile) throw new AppError("No profile found", 400);
+  return profile;
 };
 
 const putUserProfile = async (userId: string, data: any) => {
-  return await profileRepositories.putUserProfile(userId, data);
+  await profileRepositories.putUserProfile(userId, data);
 };
 
 const getTeacherProfile = async (id: string) => {

@@ -10,17 +10,10 @@ const sendOtp = async (req: Request, res: Response) => {
   const dbUser = await UserServices.getUserById(user.id);
   const { resend } = req.body;
 
-  if (!dbUser)
-    return res
-      .status(400)
-      .json({ success: false, message: "User not found in database" });
-
   if (dbUser.isVerified)
     return res
       .status(403)
       .json({ success: false, message: "Your account is already verified" });
-
-  console.log("email : ", dbUser.email);
 
   if (!resend) {
     const isOtpExist = await OtpRepository.findExistingOtp(user.email);
@@ -32,15 +25,8 @@ const sendOtp = async (req: Request, res: Response) => {
   }
 
   const otp = generateOtp();
-  // send otp
 
-  const dbOtp = await OtpRepository.createOtp(dbUser.email, otp);
-
-  if (!dbOtp)
-    return res
-      .status(400)
-      .json({ success: false, message: "Failed to create OTP" });
-
+  await OtpRepository.createOtp(dbUser.email, otp);
   await sendEmail({
     to: dbUser.email,
     subject: "Your Coursity OTP Code",
@@ -63,12 +49,6 @@ const verifyOtp = async (req: Request, res: Response) => {
 
   const dbUser = await UserServices.getUserById(user.id);
 
-  if (!dbUser)
-    return res.status(400).json({
-      success: false,
-      message: "User not found in database",
-    });
-
   if (dbUser.isVerified)
     return res.status(403).json({
       success: false,
@@ -77,12 +57,6 @@ const verifyOtp = async (req: Request, res: Response) => {
 
   // Get latest valid OTP
   const existingOtp = await OtpRepository.findExistingOtp(dbUser.email);
-
-  if (!existingOtp)
-    return res.status(400).json({
-      success: false,
-      message: "OTP expired or not found",
-    });
 
   // Compare OTP
   if (existingOtp.otp !== otp)

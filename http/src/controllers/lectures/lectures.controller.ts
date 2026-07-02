@@ -4,21 +4,12 @@ import ParticipantService from "../../services/participant.service.js";
 
 const getLectures = async (req: Request, res: Response) => {
   const lectures = await LectureServices.getLectures(req.user);
-  if (!lectures)
-    return res
-      .status(400)
-      .json({ success: false, message: "Lectures not found" });
-
   return res.status(200).json({ success: true, lectures });
 };
 
 const getLectureById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const lecture = await LectureServices.getLectureById(id as string, req.user);
-  if (!lecture)
-    return res
-      .status(400)
-      .json({ success: false, message: "Lectures not found" });
   return res.status(200).json({ success: true, lecture });
 };
 
@@ -28,10 +19,7 @@ const getLectureAccess = async (req: Request, res: Response) => {
 
   // check whether the course status is correct and lecture exists
   const lecture = await LectureServices.getLectureById(id as string, user);
-  if (!lecture)
-    return res
-      .status(200)
-      .json({ isAllowed: false, message: "Lecture not found" });
+ 
   if (user.role !== "TEACHER" && lecture.status === "NOT_STARTED")
     return res
       .status(200)
@@ -46,11 +34,6 @@ const joinLecture = async (req: Request, res: Response) => {
   const user = req.user;
 
   const lecture = await LectureServices.joinLecture(id as string, user);
-  if (!lecture)
-    return res
-      .status(200)
-      .json({ success: false, message: "Lecture not found" });
-
   if (lecture.status !== "STARTED")
     return res
       .status(200)

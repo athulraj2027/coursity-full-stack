@@ -4,21 +4,12 @@ import CourseServices from "../../services/course.services.js";
 
 const getMyCourses = async (req: Request, res: Response) => {
   const courses = await CourseServices.getCourses(req.user);
-  if (!courses)
-    return res
-      .status(400)
-      .json({ success: false, message: "Your courses not found" });
   return res.status(200).json(courses);
 };
 
 const getMyCourseById = async (req: Request, res: Response) => {
   const id = req.params.id;
-
   const course = await CourseServices.getCourseById(id as string, req.user);
-  if (!course)
-    return res
-      .status(400)
-      .json({ success: false, message: "The course not found" });
   return res.status(200).json(course);
 };
 
@@ -33,10 +24,7 @@ const createCourse = async (req: Request, res: Response) => {
     startDate,
     req.user,
   );
-  if (!course)
-    return res
-      .status(400)
-      .json({ success: false, message: "Couldn't create course" });
+
   return res.status(200).json({ success: true, course });
 };
 
@@ -59,12 +47,6 @@ const patchCourse = async (req: Request, res: Response) => {
     req.user,
     safeUpdates,
   );
-  if (!course) {
-    return res.status(404).json({
-      success: false,
-      message: "Course not found or access denied",
-    });
-  }
   return res.status(200).json(course);
 };
 
@@ -79,11 +61,6 @@ const editCourse = async (req: Request, res: Response) => {
     id as string,
     req.body,
   );
-  if (!updatedCourse)
-    return res
-      .status(400)
-      .json({ success: false, message: "Updating course failed" });
-
   return res.status(200).json({ success: true, updatedCourse });
 };
 

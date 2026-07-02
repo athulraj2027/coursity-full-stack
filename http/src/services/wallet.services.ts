@@ -1,6 +1,7 @@
 import type { Role } from "@prisma/client";
 import WalletRepository from "../repositories/wallet.repositories.js";
 import { AppError } from "../utils/AppError.js";
+import { payoutNotificationHandler } from "./notification-handlers/payout.notification.js";
 
 const getWalletTransactionsWithBalance = async (user: {
   id: string;
@@ -69,11 +70,16 @@ const payUser = async (
     throw new AppError("Insufficient wallet balance", 400);
   }
 
-  return await WalletRepository.payUserWallet(
+  await WalletRepository.payUserWallet(
     wallet.id,
     amount,
     adminUserId,
     payoutProofUrl,
+  );
+
+  await payoutNotificationHandler.payoutProcessedNotification(
+    recipientUserId,
+    amount,
   );
 };
 

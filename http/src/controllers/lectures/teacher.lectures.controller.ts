@@ -2,25 +2,16 @@ import type { Request, Response } from "express";
 import LectureServices from "../../services/lecture.services.js";
 import { pick } from "../../utils/pick.js";
 import AttendanceService from "../../services/attendance.services.js";
+import { LectureNotificationHandler } from "../../services/notification-handlers/lecture.notification.js";
 
 const getAllLectures = async (req: Request, res: Response) => {
   const lectures = await LectureServices.getLectures(req.user);
-  if (!lectures)
-    return res
-      .status(400)
-      .json({ success: false, message: "Your lectures not found" });
   return res.status(200).json(lectures);
 };
 
 const getLectureById = async (req: Request, res: Response) => {
   const id = req.params.id;
-
   const lecture = await LectureServices.getLectureById(id as string, req.user);
-
-  if (!lecture)
-    return res
-      .status(400)
-      .json({ success: false, message: "The lecture not found" });
   return res.status(200).json(lecture);
 };
 
@@ -49,11 +40,6 @@ const editLecture = async (req: Request, res: Response) => {
     req.user,
     safeUpdates,
   );
-
-  if (!lecture)
-    return res
-      .status(400)
-      .json({ success: false, message: "Couldnt update lecture" });
   return res.status(200).json({ success: true, lecture });
 };
 

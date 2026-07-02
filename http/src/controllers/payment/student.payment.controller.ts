@@ -6,10 +6,6 @@ const createOrder = async (req: Request, res: Response) => {
   const user = req.user;
 
   const order = await PaymentServices.createOrder(courseId, user);
-  if (!order)
-    return res
-      .status(400)
-      .json({ success: false, message: "Couldn't create order" });
 
   return res.status(200).json({
     success: true,
@@ -25,7 +21,6 @@ const verifyOrder = async (req: Request, res: Response) => {
   const completeEnrollment =
     await PaymentServices.completeEnrollmentAfterPayment(req.body, req.user);
 
-  // send email
   return res.status(200).json(completeEnrollment);
 };
 

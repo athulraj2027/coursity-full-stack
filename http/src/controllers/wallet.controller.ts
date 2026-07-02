@@ -5,7 +5,6 @@ const getWalletTransactions = async (req: Request, res: Response) => {
   const user = req.user;
   const walletTransactionsWithBalance =
     await WalletServices.getWalletTransactionsWithBalance(user);
-  console.log("wallet transactions : ", walletTransactionsWithBalance);
   return res.status(200).json({ success: true, walletTransactionsWithBalance });
 };
 

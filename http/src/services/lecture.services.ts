@@ -2,27 +2,34 @@ import type { Role } from "@prisma/client";
 import CourseRepositories from "../repositories/courses.repositories.js";
 import LectureRepositories from "../repositories/lectures.repositories.js";
 import { AppError } from "../utils/AppError.js";
+import { LectureNotificationHandler } from "./notification-handlers/lecture.notification.js";
 
 const getLectures = async (user: any) => {
+  let lectures;
   switch (user.role) {
     case "ADMIN":
-      return LectureRepositories.findAllInternal();
+      lectures = await LectureRepositories.findAllInternal();
     case "TEACHER":
-      return LectureRepositories.findAllOwner(user.id);
+      lectures = await LectureRepositories.findAllOwner(user.id);
     case "STUDENT":
-      return LectureRepositories.findAllStudentLectures(user.id);
+      lectures = await LectureRepositories.findAllStudentLectures(user.id);
   }
+  if (!lectures) throw new AppError("Lectures not found", 404);
+  return lectures;
 };
 
 const getLectureById = async (lectureId: string, user: any) => {
+  let lecture;
   switch (user.role) {
     case "ADMIN":
-      return LectureRepositories.findByIdInternal(lectureId);
+      lecture = await LectureRepositories.findByIdInternal(lectureId);
     case "TEACHER":
-      return LectureRepositories.findByIdOwner(user.id, lectureId);
+      lecture = await LectureRepositories.findByIdOwner(user.id, lectureId);
     case "STUDENT":
-      return LectureRepositories.findByIdStudent(user.id, lectureId);
+      lecture = await LectureRepositories.findByIdStudent(user.id, lectureId);
   }
+  if (!lecture) throw new AppError("No lecture found", 404);
+  return lecture;
 };
 
 const createLecture = async (
@@ -44,7 +51,13 @@ const editLecture = async (lectureId: string, user: any, updates: any) => {
   if (!lecture) throw new AppError("Lecture not found", 400);
   if (lecture.status !== "NOT_STARTED")
     throw new AppError("Only lectures not started is allowed to edit", 403);
-  return LectureRepositories.updateLectureOwner(lectureId, user.id, updates);
+  let edited = await LectureRepositories.updateLectureOwner(
+    lectureId,
+    user.id,
+    updates,
+  );
+  if (!edited) throw new AppError("Couldn't update lecture", 401);
+  return edited;
 };
 
 const startLecture = async (lectureId: string, userId: string) => {
@@ -69,7 +82,8 @@ const startLecture = async (lectureId: string, userId: string) => {
         403,
       );
   }
-  return LectureRepositories.startLectureOwner(lecture.id);
+  await LectureRepositories.startLectureOwner(lecture.id);
+  await LectureNotificationHandler.lectureStartedNotification(lecture);
 };
 
 const endLecture = async (lectureId: string, userId: string) => {
@@ -78,7 +92,8 @@ const endLecture = async (lectureId: string, userId: string) => {
   if (lecture.status !== "STARTED")
     throw new AppError("Lecture is not started", 403);
   // update attendance
-  return LectureRepositories.endLectureOwner(lectureId);
+  await LectureRepositories.endLectureOwner(lectureId);
+  await LectureNotificationHandler.lectureCompletedNotification(lecture);
 };
 
 const joinLecture = async (
@@ -86,12 +101,15 @@ const joinLecture = async (
   user: { userId: string; role: Role },
 ) => {
   const { userId } = user;
+  let lecture;
   switch (user.role) {
     case "ADMIN":
-      return LectureRepositories.findByIdInternal(lectureId);
+      lecture = await LectureRepositories.findByIdInternal(lectureId);
     case "STUDENT":
-      return LectureRepositories.findByIdStudent(userId, lectureId);
+      lecture = await LectureRepositories.findByIdStudent(userId, lectureId);
   }
+  if (!lecture) throw new AppError("No lecture found", 404);
+  return lecture;
 };
 
 export default {

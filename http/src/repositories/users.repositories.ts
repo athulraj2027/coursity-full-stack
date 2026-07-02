@@ -62,9 +62,22 @@ const getUsersByEmail = async (email: string) => {
   return await prisma.user.findUnique({ where: { email } });
 };
 
+const getAdminUserId = async () => {
+  const admins =  await prisma.user.findMany({
+    where: {
+      role: "ADMIN",
+    },
+    select: {
+      id: true,
+    },
+  });
+  return admins.map((admin)=>admin.id)
+};
+
 export default {
   getAllUsers,
   getUserByIdForAdmin,
   markVerified,
   getUsersByEmail,
+  getAdminUserId,
 };

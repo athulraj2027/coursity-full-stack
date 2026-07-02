@@ -5,6 +5,7 @@ import EnrollmentRepositories from "../repositories/enrollment.repositories.js";
 import PaymentRepositories from "../repositories/payments.repositories.js";
 import { AppError } from "../utils/AppError.js";
 import { prisma } from "../lib/prisma.js";
+import { EnrollmentNotificationHandler } from "./notification-handlers/enrollment.notification.js";
 
 export interface VerifyPaymentDto {
   razorpay_payment_id: string;
@@ -35,6 +36,7 @@ const createOrder = async (courseId: string, user: any) => {
     receipt: `rcpt_${Date.now()}`,
   });
 
+  if (!order) throw new AppError("Couldn't create order", 400);
   const payment = await PaymentRepositories.createOrder(
     user.id,
     courseId,
@@ -56,7 +58,7 @@ const completeEnrollmentAfterPayment = async (
     courseId,
   } = data;
 
-  return await prisma.$transaction(async (tx) => {
+  const completeEnrollment = await prisma.$transaction(async (tx) => {
     // 1️⃣ Find payment by Razorpay order ID
     const payment = await tx.payment.findUnique({
       where: { razorpayOrderId: razorpay_order_id },
@@ -198,8 +200,15 @@ const completeEnrollmentAfterPayment = async (
       },
     });
 
-    return { success: true, enrollment_id: enrollment.id };
+    return { success: true, enrollment_id: enrollment.id, enrollment };
   });
+  if (!completeEnrollment || !completeEnrollment.enrollment)
+    throw new AppError("Failed to enroll. Please give concern", 400);
+
+  await EnrollmentNotificationHandler.newEnrollmentNotification(
+    completeEnrollment.enrollment,
+  );
+  return completeEnrollment;
 };
 
 const getHistory = async () => {};

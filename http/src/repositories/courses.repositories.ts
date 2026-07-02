@@ -397,6 +397,13 @@ const editCourse = async (courseId: string, requestBody: any) => {
   });
 };
 
+const findTeacherUserId = async (courseId: string) => {
+  return await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { teacherId: true },
+  });
+};
+
 export default {
   CreateCourseOwnerInternal,
   findAllInternal,
@@ -409,4 +416,5 @@ export default {
   toggleDisableCourseInternal,
   patchCourseByOwner,
   editCourse,
+  findTeacherUserId,
 };

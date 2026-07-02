@@ -4,6 +4,7 @@ import EnrollmentRepositories from "../repositories/enrollment.repositories.js";
 import LectureRepositories from "../repositories/lectures.repositories.js";
 import ParticipantRepository from "../repositories/participants.repositories.js";
 import { AppError } from "../utils/AppError.js";
+import lectureServices from "./lecture.services.js";
 const LATE_THRESHOLD_MIN = 10;
 const PRESENT_THRESHOLD_PERCENT = 70;
 
@@ -67,8 +68,7 @@ const finalizeAttendance = async (teacherId: string, lectureId: string) => {
     });
   }
 
-  await LectureRepositories.endLectureOwner(lectureId);
-
+  await lectureServices.endLecture(lecture.id, teacherId);
   await ParticipantRepository.closeAllActiveParticipants(
     lectureId,
     lectureEndTime,

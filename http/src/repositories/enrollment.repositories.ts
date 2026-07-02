@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { AppError } from "../utils/AppError.js";
 
 const findEnrolledCourses = async (studentId: string) => {
   return prisma.enrollment.findMany({
@@ -50,7 +51,7 @@ const findEnrolledCourses = async (studentId: string) => {
 
 // fetch course which student enrolled with id
 const findEnrolledCourseById = async (studentId: string, courseId: string) => {
-  return prisma.enrollment.findFirst({
+  const enrolledCourse = await prisma.enrollment.findFirst({
     where: {
       studentId,
       courseId,
@@ -113,6 +114,8 @@ const findEnrolledCourseById = async (studentId: string, courseId: string) => {
       },
     },
   });
+  if (!enrolledCourse) throw new AppError("Course not found", 404);
+  return enrolledCourse;
 };
 
 const enrollmentDataById = async (id: string, userId: string) => {
